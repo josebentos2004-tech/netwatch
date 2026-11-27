@@ -1,0 +1,10 @@
+const router=require('express').Router(),{authenticate,allowRoles}=require('../middleware/auth');
+const auth=require('../controllers/authController'),dash=require('../controllers/dashboardController'),sites=require('../controllers/siteController'),devices=require('../controllers/deviceController'),incidents=require('../controllers/incidentController'),simulation=require('../controllers/simulationController');
+router.post('/auth/login',auth.login);router.get('/health',(req,res)=>res.json({status:'ok',service:'NetWatch API'}));
+router.use(authenticate);
+router.get('/dashboard',dash.overview);
+router.get('/sites',sites.list);router.post('/sites',allowRoles('admin','engineer'),sites.create);router.put('/sites/:id',allowRoles('admin','engineer'),sites.update);router.delete('/sites/:id',allowRoles('admin'),sites.remove);
+router.get('/devices',devices.list);router.post('/devices',allowRoles('admin','engineer'),devices.create);router.put('/devices/:id',allowRoles('admin','engineer'),devices.update);router.patch('/devices/:id/status',allowRoles('admin','engineer'),devices.changeStatus);
+router.get('/incidents',incidents.list);router.post('/incidents',incidents.create);router.patch('/incidents/:id/status',incidents.updateStatus);
+router.post('/simulation/run',allowRoles('admin'),simulation.run);
+module.exports=router;
